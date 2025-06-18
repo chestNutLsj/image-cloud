@@ -1,0 +1,86 @@
+<algo name="RingAllReduce" proto="hcclang" nchannels="1" nchunksperloop="4" ngpus="4" coll="allreduce" inplace="1">
+  <gpu id="0" i_chunks="4" o_chunks="4" s_chunks="1">
+    <tb id="0" send="-1" recv="-1" chan="0">
+      <!-- --- Reduce-Scatter Phase: 3 steps --- -->
+      <step s="0" type="s" srcbuf="i" srcoff="3" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="1" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="2" type="re" srcbuf="i" srcoff="2" dstbuf="i" dstoff="2" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="3" type="s" srcbuf="i" srcoff="2" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="4" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="5" type="re" srcbuf="i" srcoff="1" dstbuf="i" dstoff="1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="6" type="s" srcbuf="i" srcoff="1" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="7" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="8" type="re" srcbuf="i" srcoff="0" dstbuf="i" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <!-- --- All-Gather Phase: 3 steps --- -->
+      <step s="9" type="s" srcbuf="i" srcoff="0" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="10" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="3" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="11" type="s" srcbuf="i" srcoff="3" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="12" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="2" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="13" type="s" srcbuf="i" srcoff="2" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="14" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+    </tb>
+  </gpu>
+  <gpu id="1" i_chunks="4" o_chunks="4" s_chunks="1">
+    <tb id="0" send="-1" recv="-1" chan="0">
+      <!-- --- Reduce-Scatter Phase: 3 steps --- -->
+      <step s="0" type="s" srcbuf="i" srcoff="0" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="1" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="2" type="re" srcbuf="i" srcoff="3" dstbuf="i" dstoff="3" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="3" type="s" srcbuf="i" srcoff="3" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="4" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="5" type="re" srcbuf="i" srcoff="2" dstbuf="i" dstoff="2" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="6" type="s" srcbuf="i" srcoff="2" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="7" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="8" type="re" srcbuf="i" srcoff="1" dstbuf="i" dstoff="1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <!-- --- All-Gather Phase: 3 steps --- -->
+      <step s="9" type="s" srcbuf="i" srcoff="1" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="10" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="11" type="s" srcbuf="i" srcoff="0" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="12" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="3" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="13" type="s" srcbuf="i" srcoff="3" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="14" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="2" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+    </tb>
+  </gpu>
+  <gpu id="2" i_chunks="4" o_chunks="4" s_chunks="1">
+    <tb id="0" send="-1" recv="-1" chan="0">
+      <!-- --- Reduce-Scatter Phase: 3 steps --- -->
+      <step s="0" type="s" srcbuf="i" srcoff="1" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="1" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="2" type="re" srcbuf="i" srcoff="0" dstbuf="i" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="3" type="s" srcbuf="i" srcoff="0" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="4" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="5" type="re" srcbuf="i" srcoff="3" dstbuf="i" dstoff="3" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="6" type="s" srcbuf="i" srcoff="3" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="7" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="8" type="re" srcbuf="i" srcoff="2" dstbuf="i" dstoff="2" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <!-- --- All-Gather Phase: 3 steps --- -->
+      <step s="9" type="s" srcbuf="i" srcoff="2" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="10" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="11" type="s" srcbuf="i" srcoff="1" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="12" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="13" type="s" srcbuf="i" srcoff="0" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="14" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="3" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+    </tb>
+  </gpu>
+  <gpu id="3" i_chunks="4" o_chunks="4" s_chunks="1">
+    <tb id="0" send="-1" recv="-1" chan="0">
+      <!-- --- Reduce-Scatter Phase: 3 steps --- -->
+      <step s="0" type="s" srcbuf="i" srcoff="2" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="1" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="2" type="re" srcbuf="i" srcoff="1" dstbuf="i" dstoff="1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="3" type="s" srcbuf="i" srcoff="1" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="4" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="5" type="re" srcbuf="i" srcoff="0" dstbuf="i" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="6" type="s" srcbuf="i" srcoff="0" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="7" type="r" srcbuf="i" srcoff="-1" dstbuf="s" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="8" type="re" srcbuf="i" srcoff="3" dstbuf="i" dstoff="3" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <!-- --- All-Gather Phase: 3 steps --- -->
+      <step s="9" type="s" srcbuf="i" srcoff="3" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="10" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="2" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="11" type="s" srcbuf="i" srcoff="2" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="12" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="13" type="s" srcbuf="i" srcoff="1" dstbuf="i" dstoff="-1" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+      <step s="14" type="r" srcbuf="i" srcoff="-1" dstbuf="i" dstoff="0" cnt="262144" depid="-1" deps="-1" hasdep="0"/>
+    </tb>
+  </gpu>
+</algo> 

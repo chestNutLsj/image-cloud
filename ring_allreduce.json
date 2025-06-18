@@ -1,0 +1,659 @@
+{
+    "protocol": "hcclang",
+    "version": "1.1",
+    "algorithm": "RingAllReduce",
+    "comment": "A complete description of a 4-rank Ring AllReduce algorithm. This is NOT a simplified version. It details the two phases: Reduce-Scatter and All-Gather, breaking them down into fundamental send, recv, and local reduce operations.",
+    "settings": {
+        "ranks": 4,
+        "chunks_per_rank": 4,
+        "chunk_size_bytes": 1048576,
+        "data_type": "HCCL_DATA_TYPE_FP32",
+        "reduce_op": "HCCL_REDUCE_SUM"
+    },
+    "buffers": [
+        {
+            "name": "user_buffer",
+            "comment": "The main input/output buffer, conceptually divided into 'chunks_per_rank' chunks.",
+            "size": "chunks_per_rank * chunk_size_bytes"
+        },
+        {
+            "name": "temp_buffer",
+            "comment": "A temporary buffer for receiving data before local reduction.",
+            "size": "chunk_size_bytes"
+        }
+    ],
+    "ranks": [
+        {
+            "rank_id": 0,
+            "steps": [
+                {
+                    "comment": "--- Reduce-Scatter Phase: 3 steps ---"
+                },
+                {
+                    "step": 0,
+                    "type": "send",
+                    "peer": 1,
+                    "comment": "Send chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 1,
+                    "type": "recv",
+                    "peer": 3,
+                    "comment": "Recv chunk 2",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 2,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 2
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 2
+                    }
+                },
+                {
+                    "step": 3,
+                    "type": "send",
+                    "peer": 1,
+                    "comment": "Send chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 4,
+                    "type": "recv",
+                    "peer": 3,
+                    "comment": "Recv chunk 1",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 5,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 1
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 1
+                    }
+                },
+                {
+                    "step": 6,
+                    "type": "send",
+                    "peer": 1,
+                    "comment": "Send chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 7,
+                    "type": "recv",
+                    "peer": 3,
+                    "comment": "Recv chunk 0",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 8,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 0
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 0
+                    }
+                },
+                {
+                    "comment": "--- All-Gather Phase: 3 steps ---"
+                },
+                {
+                    "step": 9,
+                    "type": "send",
+                    "peer": 1,
+                    "comment": "Send final chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 10,
+                    "type": "recv",
+                    "peer": 3,
+                    "comment": "Recv final chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 11,
+                    "type": "send",
+                    "peer": 1,
+                    "comment": "Forward final chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 12,
+                    "type": "recv",
+                    "peer": 3,
+                    "comment": "Recv final chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 13,
+                    "type": "send",
+                    "peer": 1,
+                    "comment": "Forward final chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 14,
+                    "type": "recv",
+                    "peer": 3,
+                    "comment": "Recv final chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                }
+            ]
+        },
+        {
+            "rank_id": 1,
+            "steps": [
+                {
+                    "comment": "--- Reduce-Scatter Phase: 3 steps ---"
+                },
+                {
+                    "step": 0,
+                    "type": "send",
+                    "peer": 2,
+                    "comment": "Send chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 1,
+                    "type": "recv",
+                    "peer": 0,
+                    "comment": "Recv chunk 3",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 2,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 3
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 3
+                    }
+                },
+                {
+                    "step": 3,
+                    "type": "send",
+                    "peer": 2,
+                    "comment": "Send chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 4,
+                    "type": "recv",
+                    "peer": 0,
+                    "comment": "Recv chunk 2",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 5,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 2
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 2
+                    }
+                },
+                {
+                    "step": 6,
+                    "type": "send",
+                    "peer": 2,
+                    "comment": "Send chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 7,
+                    "type": "recv",
+                    "peer": 0,
+                    "comment": "Recv chunk 1",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 8,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 1
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 1
+                    }
+                },
+                {
+                    "comment": "--- All-Gather Phase: 3 steps ---"
+                },
+                {
+                    "step": 9,
+                    "type": "send",
+                    "peer": 2,
+                    "comment": "Send final chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 10,
+                    "type": "recv",
+                    "peer": 0,
+                    "comment": "Recv final chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 11,
+                    "type": "send",
+                    "peer": 2,
+                    "comment": "Forward final chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 12,
+                    "type": "recv",
+                    "peer": 0,
+                    "comment": "Recv final chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 13,
+                    "type": "send",
+                    "peer": 2,
+                    "comment": "Forward final chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 14,
+                    "type": "recv",
+                    "peer": 0,
+                    "comment": "Recv final chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                }
+            ]
+        },
+        {
+            "rank_id": 2,
+            "steps": [
+                {
+                    "comment": "--- Reduce-Scatter Phase: 3 steps ---"
+                },
+                {
+                    "step": 0,
+                    "type": "send",
+                    "peer": 3,
+                    "comment": "Send chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 1,
+                    "type": "recv",
+                    "peer": 1,
+                    "comment": "Recv chunk 0",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 2,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 0
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 0
+                    }
+                },
+                {
+                    "step": 3,
+                    "type": "send",
+                    "peer": 3,
+                    "comment": "Send chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 4,
+                    "type": "recv",
+                    "peer": 1,
+                    "comment": "Recv chunk 3",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 5,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 3
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 3
+                    }
+                },
+                {
+                    "step": 6,
+                    "type": "send",
+                    "peer": 3,
+                    "comment": "Send chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 7,
+                    "type": "recv",
+                    "peer": 1,
+                    "comment": "Recv chunk 2",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 8,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 2
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 2
+                    }
+                },
+                {
+                    "comment": "--- All-Gather Phase: 3 steps ---"
+                },
+                {
+                    "step": 9,
+                    "type": "send",
+                    "peer": 3,
+                    "comment": "Send final chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 10,
+                    "type": "recv",
+                    "peer": 1,
+                    "comment": "Recv final chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 11,
+                    "type": "send",
+                    "peer": 3,
+                    "comment": "Forward final chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 12,
+                    "type": "recv",
+                    "peer": 1,
+                    "comment": "Recv final chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 13,
+                    "type": "send",
+                    "peer": 3,
+                    "comment": "Forward final chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 14,
+                    "type": "recv",
+                    "peer": 1,
+                    "comment": "Recv final chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                }
+            ]
+        },
+        {
+            "rank_id": 3,
+            "steps": [
+                {
+                    "comment": "--- Reduce-Scatter Phase: 3 steps ---"
+                },
+                {
+                    "step": 0,
+                    "type": "send",
+                    "peer": 0,
+                    "comment": "Send chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 1,
+                    "type": "recv",
+                    "peer": 2,
+                    "comment": "Recv chunk 1",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 2,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 1
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 1
+                    }
+                },
+                {
+                    "step": 3,
+                    "type": "send",
+                    "peer": 0,
+                    "comment": "Send chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 4,
+                    "type": "recv",
+                    "peer": 2,
+                    "comment": "Recv chunk 0",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 5,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 0
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 0
+                    }
+                },
+                {
+                    "step": 6,
+                    "type": "send",
+                    "peer": 0,
+                    "comment": "Send chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 7,
+                    "type": "recv",
+                    "peer": 2,
+                    "comment": "Recv chunk 3",
+                    "buffer": "temp_buffer",
+                    "offset_chunks": 0
+                },
+                {
+                    "step": 8,
+                    "type": "reduce",
+                    "inputs": [
+                        {
+                            "buffer": "user_buffer",
+                            "offset_chunks": 3
+                        },
+                        {
+                            "buffer": "temp_buffer"
+                        }
+                    ],
+                    "output": {
+                        "buffer": "user_buffer",
+                        "offset_chunks": 3
+                    }
+                },
+                {
+                    "comment": "--- All-Gather Phase: 3 steps ---"
+                },
+                {
+                    "step": 9,
+                    "type": "send",
+                    "peer": 0,
+                    "comment": "Send final chunk 3",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 3
+                },
+                {
+                    "step": 10,
+                    "type": "recv",
+                    "peer": 2,
+                    "comment": "Recv final chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 11,
+                    "type": "send",
+                    "peer": 0,
+                    "comment": "Forward final chunk 2",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 2
+                },
+                {
+                    "step": 12,
+                    "type": "recv",
+                    "peer": 2,
+                    "comment": "Recv final chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 13,
+                    "type": "send",
+                    "peer": 0,
+                    "comment": "Forward final chunk 1",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 1
+                },
+                {
+                    "step": 14,
+                    "type": "recv",
+                    "peer": 2,
+                    "comment": "Recv final chunk 0",
+                    "buffer": "user_buffer",
+                    "offset_chunks": 0
+                }
+            ]
+        }
+    ]
+}
